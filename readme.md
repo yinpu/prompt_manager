@@ -1,187 +1,189 @@
 # Prompt Manager
 
-一个强大的提示（Prompts）管理和版本控制工具，帮助您有效地组织、追踪和重用AI提示词。
+A powerful prompt management and version control tool that helps you effectively organize, track, and reuse AI prompts.
 
-## 核心概念
+[English](README.md) | [中文](README_CN.md)
 
-### 项目结构
+## Core Concepts
 
-Prompt Manager 使用层级结构来组织提示：
+### Project Structure
+
+Prompt Manager uses a hierarchical structure to organize prompts:
 
 ```
-项目(Project) > 提示(Prompt) > 版本(Version)
+Project > Prompt > Version
 ```
 
-文件系统存储结构：
+File system storage structure:
 ```
 root/
   project/
     prompt/
       v0001/
-        prompt.txt     # 提示内容
-        outputs.json   # 模型输出
-        meta.json      # 元数据
+        prompt.txt     # Prompt content
+        outputs.json   # Model outputs
+        meta.json      # Metadata
 ```
 
-### 主要概念
+### Key Concepts
 
-- **项目(Project)**: 相关提示的集合，用于组织不同领域或任务的提示
-- **提示(Prompt)**: 单个提示的容器，可以包含多个版本
-- **版本(Version)**: 提示的特定变体，包含：
-  - **提示内容(content)**: 发送给AI模型的实际文本，可以包含变量占位符（如`{name}`）用于动态替换
-  - **模型输出(model_outputs)**: 不同AI模型对同一提示的响应结果，可以是简单的文本输出或包含元数据的复杂结构
-  - **元数据(meta)**: 与提示版本相关的附加信息，如语言、标签、使用场景等，便于分类和筛选
+- **Project**: A collection of related prompts, used to organize prompts for different domains or tasks
+- **Prompt**: A container for a single prompt, which can include multiple versions
+- **Version**: A specific variant of a prompt, containing:
+  - **Content**: The actual text sent to AI models, which can include variable placeholders (like `{name}`) for dynamic replacement
+  - **Model Outputs**: Responses from different AI models to the same prompt, which can be simple text outputs or complex structures with metadata
+  - **Metadata**: Additional information associated with the prompt version, such as language, tags, use cases, etc., for easy classification and filtering
 
 
-从源码安装：
+Install from source:
 
 ```bash
-git clone https://github.com/yourusername/prompt_manager
+git clone https://github.com/yinpu/prompt_manager.git
 cd prompt_manager
 pip install -e .
 ```
 
-## 快速开始
+## Quick Start
 
-### 基本使用
+### Basic Usage
 
 ```python
 from prompt_manager import PromptManager
 
-# 初始化管理器（指定存储路径）
+# Initialize the manager (specify storage path)
 pm = PromptManager("./save")
 
-# 获取或创建提示
-prompt = pm.get_prompt("/项目名/提示名")
+# Get or create a prompt
+prompt = pm.get_prompt("/project_name/prompt_name")
 
-# 添加新版本（自动生成版本号）
+# Add a new version (automatically generate version number)
 prompt.add_version(
-    # content: 提示内容，可包含变量占位符如{name}用于后续替换
-    content="你好 {name}！",
+    # content: Prompt content, can include variable placeholders like {name} for later replacement
+    content="Hello {name}!",
     
-    # model_outputs: 不同模型的输出结果
+    # model_outputs: Output results from different models
     model_outputs={
-        # 简单格式：直接提供模型输出文本
-        "gpt-4o": "你好，爱丽丝 👋",
-        # 复杂格式：包含输出文本和相关元数据
-        "llama3": {"output": "你好，爱丽丝。", "meta": {"temp": 0.3}},
+        # Simple format: directly provide model output text
+        "gpt-4o": "Hello, Alice 👋",
+        # Complex format: includes output text and related metadata
+        "llama3": {"output": "Hello, Alice.", "meta": {"temp": 0.3}},
     },
     
-    # meta: 版本元数据，用于存储与此版本相关的附加信息
-    meta={"lang": "zh"},
+    # meta: Version metadata, used to store additional information related to this version
+    meta={"lang": "en"},
 )
 
-# 保存更改
+# Save changes
 prompt.save()
 ```
 
-### 使用自定义版本号
+### Using Custom Version Numbers
 
 ```python
 prompt.add_version(
     content="Hello {name}!",
     model_outputs={"gpt-4o": "Hi Alice 👋"},
     meta={"lang": "en"},
-    version="english-v1",  # 自定义版本号
+    version="english-v1",  # Custom version number
 )
 prompt.save()
 ```
 
-### 修改现有版本
+### Modifying Existing Versions
 
 ```python
-# 更新元数据
+# Update metadata
 prompt.modify_version(
     "v0001",
     meta_update={"reviewed": True},
 )
 
-# 添加新的模型输出
+# Add new model output
 prompt.add_model_output(
     "v0001",
     "claude-3",
-    {"output": "你好，爱丽丝！很高兴见到你。", "meta": {"temperature": 0.7}}
+    {"output": "Hello, Alice! Nice to meet you.", "meta": {"temperature": 0.7}}
 )
 
 prompt.save(overwrite_existing=True)
 ```
 
-### 选择特定版本
+### Selecting Specific Versions
 
 ```python
-# 将特定版本设为当前版本（latest）
+# Set a specific version as the current version (latest)
 current_version = prompt.select_version("english-v1")
-print(f"当前版本: {current_version.version}")
+print(f"Current version: {current_version.version}")
 ```
 
-### 导入和导出
+### Import and Export
 
 ```python
-# 导出提示（包含所有版本）
+# Export prompt (including all versions)
 export_file = prompt.export("./my_prompt.json")
 
-# 导入到新位置
-new_prompt = pm.import_prompt(export_file, "/新项目/新提示名")
+# Import to a new location
+new_prompt = pm.import_prompt(export_file, "/new_project/new_prompt_name")
 ```
 
-## 高级功能
+## Advanced Features
 
-### 遍历版本
+### Traversing Versions
 
 ```python
-# 获取所有版本
+# Get all versions
 for version in prompt.versions:
-    print(f"版本: {version.version}")
-    print(f"内容: {version.content}")
-    print(f"模型输出数量: {len(version.model_outputs)}")
-    print(f"元数据: {version.meta}")
+    print(f"Version: {version.version}")
+    print(f"Content: {version.content}")
+    print(f"Number of model outputs: {len(version.model_outputs)}")
+    print(f"Metadata: {version.meta}")
 ```
 
-### 删除版本
+### Deleting Versions
 
 ```python
 prompt.delete_version("v0001")
 prompt.save()
 ```
 
-### 项目管理
+### Project Management
 
 ```python
-# 列出所有项目
+# List all projects
 projects = pm.list_projects()
 
-# 获取项目
-project = pm.get_project("项目名")
+# Get a project
+project = pm.get_project("project_name")
 
-# 列出项目中的所有提示
+# List all prompts in the project
 prompts = project.list_prompts()
 ```
 
-## 数据模型
+## Data Models
 
 ### PromptVersion
 
-提示版本包含：
-- `version`: 版本标识符（如"v0001"或自定义名称如"english-v1"），用于唯一标识一个提示版本
-- `content`: 提示内容文本，即发送给AI模型的实际文本，可包含变量占位符（如`{name}`）用于动态替换
-- `model_outputs`: 不同模型对该提示的输出结果集合，可以存储多个AI模型的响应以便比较
-- `meta`: 自定义元数据，用于存储与提示相关的附加信息（如语言、领域、使用场景、标签等）
-- `created_at`: 创建时间，自动记录版本的创建时间戳
+A prompt version contains:
+- `version`: Version identifier (such as "v0001" or custom name like "english-v1"), used to uniquely identify a prompt version
+- `content`: Prompt content text, the actual text sent to AI models, can include variable placeholders (like `{name}`) for dynamic replacement
+- `model_outputs`: Collection of output results from different models for this prompt, can store responses from multiple AI models for comparison
+- `meta`: Custom metadata, used to store additional information related to the prompt (such as language, domain, use case, tags, etc.)
+- `created_at`: Creation time, automatically records the timestamp when the version was created
 
 ### ModelOutput
 
-模型输出包含：
-- `model_name`: 模型名称，标识生成此输出的AI模型（如"gpt-4o"、"llama3"等）
-- `output`: 模型生成的输出文本，即AI模型对提示的实际响应内容
-- `meta`: 与此输出相关的元数据，包含生成过程中使用的参数（如温度、top_p、最大长度等）和其他相关信息
+A model output contains:
+- `model_name`: Model name, identifies the AI model that generated this output (such as "gpt-4o", "llama3", etc.)
+- `output`: Output text generated by the model, the actual response content from the AI model to the prompt
+- `meta`: Metadata related to this output, including parameters used in the generation process (such as temperature, top_p, maximum length, etc.) and other relevant information
 
-## 使用场景
+## Use Cases
 
-- **提示工程研发**: 跟踪提示的迭代和改进过程
-- **多模型比较**: 比较不同AI模型对同一提示的响应
-- **版本控制**: 保存提示的历史版本，便于回溯和对比
-- **团队协作**: 导入/导出功能便于团队成员之间共享提示
+- **Prompt Engineering R&D**: Track the iteration and improvement process of prompts
+- **Multi-model Comparison**: Compare responses from different AI models to the same prompt
+- **Version Control**: Save historical versions of prompts for easy reference and comparison
+- **Team Collaboration**: Import/export functionality makes it easy to share prompts between team members
 
-## 系统要求
+## System Requirements
 
-- Python 3.9 或更高版本
+- Python 3.9 or higher
