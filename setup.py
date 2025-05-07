@@ -6,12 +6,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="prompt-manager",
     version="0.1.0",
-    author="作者名",
-    author_email="your.email@example.com",
+    author="yinpu",
+    author_email="yinpu.mail@gmail.com",
     description="一个用于管理和版本控制提示（prompts）的工具",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/prompt_manager",
+    url="https://github.com/yinpu/prompt_manager.git",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
