@@ -1,0 +1,12 @@
+{
+  "gpt-4o": {
+    "output": "Hi Alice 👋",
+    "meta": {}
+  },
+  "llama3": {
+    "output": "Hello, Alice.",
+    "meta": {
+      "temp": 0.3
+    }
+  }
+}
