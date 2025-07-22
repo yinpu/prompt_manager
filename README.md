@@ -43,6 +43,15 @@ cd prompt_manager
 pip install -e .
 ```
 
+### Command Line Usage
+
+After installation, a `prompt-manager` command is available:
+
+```bash
+# list existing projects
+prompt-manager ./save list-projects
+```
+
 ## Quick Start
 
 ### Basic Usage
