@@ -13,6 +13,11 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yinpu/prompt_manager.git",
     packages=find_packages(),
+    entry_points={
+        "console_scripts": [
+            "prompt-manager=prompt_manager.cli:main",
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

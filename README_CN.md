@@ -43,6 +43,15 @@ cd prompt_manager
 pip install -e .
 ```
 
+### 命令行使用
+
+安装后会生成 `prompt-manager` 命令：
+
+```bash
+# 查看已有项目
+prompt-manager ./save list-projects
+```
+
 ## 快速开始
 
 ### 基本使用
